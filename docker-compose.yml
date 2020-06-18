@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+
+  postgres:
+    container_name: postgres
+    restart: always
+    image: postgres:latest
+    expose:
+      - 5432
+    ports:
+      - "5432:5432"
+    environment:
+      - DEBUG=false 
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=bankapp
+      - DATABASE_HOST=postgres 
+    volumes:
+      - ./postgresql/data:/var/lib/postgresql
+  
+  api:
+    container_name: api
+    build:
+      context: ./api
+    depends_on:
+      - postgres
+    expose:
+      - 8888
+    ports:
+      - 8888:8888
+         

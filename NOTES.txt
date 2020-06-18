@@ -1,0 +1,5 @@
+Status: WIP
+
+Article: Golang course with building a fintech banking app
+
+Git: https://github.com/Duomly/go-bank-backend
