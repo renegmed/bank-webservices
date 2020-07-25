@@ -1,6 +1,7 @@
 package users
 
 import (
+	"fmt"
 	"time"
 
 	"duomly.com/go-bank-backend/helpers"
@@ -21,7 +22,7 @@ func prepareToken(user *interfaces.User) string {
 
 	return token
 }
-func prepareResponse(user *interfaces.User, accounts []interfaces.ResponseAccount) map[string]interface{} {
+func prepareResponse(user *interfaces.User, accounts []interfaces.ResponseAccount, withToken bool) map[string]interface{} {
 
 	// Setup response
 	responseUser := &interfaces.ResponseUser{
@@ -31,12 +32,12 @@ func prepareResponse(user *interfaces.User, accounts []interfaces.ResponseAccoun
 		Accounts: accounts,
 	}
 
-	var token = prepareToken(user)
-	// Prepare response
 	var response = map[string]interface{}{"message": "all is fine"}
-	response["jwt"] = token
+	if withToken {
+		var token = prepareToken(user)
+		response["jwt"] = token
+	}
 	response["data"] = responseUser
-
 	return response
 }
 func Login(username string, pass string) map[string]interface{} {
@@ -69,12 +70,14 @@ func Login(username string, pass string) map[string]interface{} {
 
 	defer db.Close()
 
-	var response = prepareResponse(user, accounts)
+	var response = prepareResponse(user, accounts, true)
 
 	return response
 }
 
 func Register(username string, email string, pass string) map[string]interface{} {
+
+	fmt.Printf("username: %s, email: %s, password: %s", username, email, pass)
 
 	valid := helpers.Validation(
 		[]interfaces.Validation{
@@ -99,7 +102,28 @@ func Register(username string, email string, pass string) map[string]interface{}
 	respAccount := interfaces.ResponseAccount{ID: account.ID, Name: account.Name, Balance: int(account.Balance)}
 	accounts = append(accounts, respAccount)
 
-	var response = prepareResponse(user, accounts)
+	var response = prepareResponse(user, accounts, true)
 
+	return response
+}
+
+func GetUser(id string, jwt string) map[string]interface{} {
+	isValid := helpers.ValidateToken(id, jwt)
+
+	if !isValid {
+		return map[string]interface{}{"message": "Not valid token"}
+	}
+	db := helpers.ConnectDB()
+	defer db.Close()
+
+	user := &interfaces.User{}
+	if db.Where("id = ? ", id).First(&user).RecordNotFound() {
+		return map[string]interface{}{"message": "User not found"}
+	}
+
+	accounts := []interfaces.ResponseAccount{}
+	db.Table("accounts").Select("id, name, balance").Where("user_id = ? ", user.ID).Scan(&accounts)
+
+	var response = prepareResponse(user, accounts, false)
 	return response
 }

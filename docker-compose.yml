@@ -23,6 +23,12 @@ services:
     container_name: api
     build:
       context: ./api
+    environment:
+      - DB_NAME=bankapp
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres 
+      - DB_PORT=5432 
+      - DB_HOST=postgres       
     depends_on:
       - postgres
     expose:
