@@ -3,3 +3,40 @@ Status: WIP
 Article: Golang course with building a fintech banking app
 
 Git: https://github.com/Duomly/go-bank-backend
+
+
+Running on Kubernetes
+
+1. Set docker environment into minikube
+
+  $> eval $(minikube docker-env)
+
+  $> docker images
+
+2. Build bank api 
+
+  $> cd api/
+
+  $> make build 
+
+  $> docker images 
+
+3. Deploy k8s manifests
+
+  $> cd ../k8s 
+  
+  $> kubectl apply -f . 
+
+4. Deploy k8s2 manifests
+
+  $> cd ../k8s2 
+
+  $> kubectl apply -f .
+
+5. Test
+
+  $> make register1   NOTE: need to copy and paste jwt token into makefile get2
+
+  $> make get1
+
+  $> make get2 

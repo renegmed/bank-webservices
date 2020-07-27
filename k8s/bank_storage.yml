@@ -1,0 +1,29 @@
+# What do want?
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bank-pvc
+spec:
+  # links/assoicates to  persistent volume
+  storageClassName: mylocalstorage
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
+# How do we want it implemented
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-storage
+spec:
+  # links/associates to persistent volume claim
+  storageClassName: mylocalstorage
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath: 
+    path: "/mnt/bank/data/"  # located at minikube,  $ minikube ssh
+    type: DirectoryOrCreate

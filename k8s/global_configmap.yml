@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap 
+metadata:
+    name: global-config 
+    namespace: default
+data:
+    DB_NAME: "bankapp" 
+    DB_PORT: "5432" 
+    DB_HOST: "postgres"
+    DEBUG: "false"  
+    POSTGRES_DB: "bankapp"
+    DATABASE_HOST: "postgres" 
