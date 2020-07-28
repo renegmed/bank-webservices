@@ -7,36 +7,36 @@ import (
 
 	"duomly.com/go-bank-backend/interfaces"
 
+	"duomly.com/go-bank-backend/database"
 	"duomly.com/go-bank-backend/helpers"
 )
 
 func updateAccount(id uint, amount int) interfaces.ResponseAccount {
-	db := helpers.ConnectDB()
+
 	account := &interfaces.Account{}
-	db.Where("id = ? ", id).First(&account)
+	database.DB.Where("id = ? ", id).First(&account)
 
 	// if db.Where("id = ? ", id).First(&account).RecordNotFound() {
 	// 	return nil
 	// }
 	account.Balance = uint(amount)
-	db.Save(&account)
+	database.DB.Save(&account)
 
 	responseAcc := interfaces.ResponseAccount{}
 	responseAcc.ID = account.ID
 	responseAcc.Name = account.Name
 	responseAcc.Balance = int(account.Balance)
-	defer db.Close()
+
 	return responseAcc
 }
 
 func getAccount(id uint) *interfaces.Account {
-	db := helpers.ConnectDB()
 	account := &interfaces.Account{}
-	db.Where("id = ? ", id).First(&account)
+	database.DB.Where("id = ? ", id).First(&account)
 	// if db.Where("id = ? ", id).First(&account).RecordNotFound() {
 	// 	return nil
 	// }
-	defer db.Close()
+
 	return account
 }
 

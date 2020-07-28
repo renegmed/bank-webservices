@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 
+	"duomly.com/go-bank-backend/transactions"
+
 	"duomly.com/go-bank-backend/migrations"
 
 	"duomly.com/go-bank-backend/helpers"
@@ -105,13 +107,21 @@ func merge(w http.ResponseWriter, r *http.Request) {
 	log.Println("Start migrations...")
 
 	migrations.Migrate()
-	migrations.MigrateTransactions()
+	//migrations.MigrateTransactions()
 
 	log.Println("Done migrations...")
 
 	var resp = make(map[string]interface{}) //; map[string]interface{}
 	resp["message"] = "all is fine"
 	apiResponse(resp, w)
+}
+
+func getMyTransactions(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userId := vars["userID"]
+	auth := r.Header.Get("Authorization")
+	transactions := transactions.GetMyTransactions(userId, auth)
+	apiResponse(transactions, w)
 }
 
 func StartApi() {
@@ -121,6 +131,7 @@ func StartApi() {
 	router.HandleFunc("/login", login).Methods("POST")
 	router.HandleFunc("/register", register).Methods("POST")
 	router.HandleFunc("/transaction", transaction).Methods("POST")
+	router.HandleFunc("/transactions/{userID}", getMyTransactions).Methods("GET")
 	router.HandleFunc("/user/{id}", getUser).Methods("GET")
 	fmt.Println("App is working on port :8888")
 	log.Fatal(http.ListenAndServe(":8888", router))

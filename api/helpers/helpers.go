@@ -4,10 +4,8 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -15,7 +13,6 @@ import (
 	"duomly.com/go-bank-backend/interfaces"
 	jwt "github.com/dgrijalva/jwt-go"
 
-	"github.com/jinzhu/gorm"
 	// _ "github.com/lib/pq"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"golang.org/x/crypto/bcrypt"
@@ -40,21 +37,21 @@ func HashOnlyVulnerable(pass []byte) string {
 	return hex.EncodeToString(hash.Sum(nil))
 }
 
-func ConnectDB() *gorm.DB {
-	dbName := os.Getenv("DB_NAME")
-	dbUser := os.Getenv("DB_USER")
-	dbPassword := os.Getenv("DB_PASSWORD")
-	dbPort := os.Getenv("DB_PORT")
-	dbHost := os.Getenv("DB_HOST")
+// func ConnectDB() *gorm.DB {
+// 	dbName := os.Getenv("DB_NAME")
+// 	dbUser := os.Getenv("DB_USER")
+// 	dbPassword := os.Getenv("DB_PASSWORD")
+// 	dbPort := os.Getenv("DB_PORT")
+// 	dbHost := os.Getenv("DB_HOST")
 
-	log.Printf("host=%s, port=%s, user=%s, dbname=%s, password=%s", dbHost, dbPort, dbUser, dbName, dbPassword)
-	//db, err := gorm.Open("postgres", "host=postgres port=5432 user=postgres dbname=bankapp password=postgres sslmode=disable")
-	db, err := gorm.Open(fmt.Sprintf("%s", dbHost),
-		fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=disable", dbHost, dbPort, dbUser, dbName, dbPassword))
-	HandleErr(err)
-	log.Println("Connected to db....")
-	return db
-}
+// 	log.Printf("host=%s, port=%s, user=%s, dbname=%s, password=%s", dbHost, dbPort, dbUser, dbName, dbPassword)
+// 	//db, err := gorm.Open("postgres", "host=postgres port=5432 user=postgres dbname=bankapp password=postgres sslmode=disable")
+// 	db, err := gorm.Open(fmt.Sprintf("%s", dbHost),
+// 		fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=disable", dbHost, dbPort, dbUser, dbName, dbPassword))
+// 	HandleErr(err)
+// 	log.Println("Connected to db....")
+// 	return db
+// }
 
 func Validation(values []interfaces.Validation) bool {
 	username := regexp.MustCompile(`^([A-Za-z0-9]{5,})+$`)

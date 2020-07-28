@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"duomly.com/go-bank-backend/database"
+
 	"duomly.com/go-bank-backend/helpers"
 	"duomly.com/go-bank-backend/interfaces"
 	jwt "github.com/dgrijalva/jwt-go"
@@ -51,10 +53,8 @@ func Login(username string, pass string) map[string]interface{} {
 		return map[string]interface{}{"message": "not valid values"}
 	}
 
-	// Connect DB
-	db := helpers.ConnectDB()
 	user := &interfaces.User{}
-	if db.Where("username = ? ", username).First(&user).RecordNotFound() {
+	if database.DB.Where("username = ? ", username).First(&user).RecordNotFound() {
 		return map[string]interface{}{"message": "User not found"}
 	}
 
@@ -66,9 +66,7 @@ func Login(username string, pass string) map[string]interface{} {
 	}
 	// Find accounts for the user
 	accounts := []interfaces.ResponseAccount{}
-	db.Table("accounts").Select("id, name, balance").Where("user_id = ? ", user.ID).Scan(&accounts)
-
-	defer db.Close()
+	database.DB.Table("accounts").Select("id, name, balance").Where("user_id = ? ", user.ID).Scan(&accounts)
 
 	var response = prepareResponse(user, accounts, true)
 
@@ -77,7 +75,7 @@ func Login(username string, pass string) map[string]interface{} {
 
 func Register(username string, email string, pass string) map[string]interface{} {
 
-	fmt.Printf("username: %s, email: %s, password: %s", username, email, pass)
+	fmt.Printf("Register() username: %s, email: %s, password: %s", username, email, pass)
 
 	valid := helpers.Validation(
 		[]interfaces.Validation{
@@ -88,15 +86,13 @@ func Register(username string, email string, pass string) map[string]interface{}
 	if !valid {
 		return map[string]interface{}{"message": "not valid values"}
 	}
-	db := helpers.ConnectDB()
-	defer db.Close()
 
 	generatedPassword := helpers.HashAndSalt([]byte(pass))
 	user := &interfaces.User{Username: username, Email: email, Password: generatedPassword}
-	db.Create(&user)
+	database.DB.Create(&user)
 
 	account := &interfaces.Account{Type: "Daily Account", Name: string(username + "'s" + " account"), Balance: 0, UserID: user.ID}
-	db.Create(&account)
+	database.DB.Create(&account)
 
 	accounts := []interfaces.ResponseAccount{}
 	respAccount := interfaces.ResponseAccount{ID: account.ID, Name: account.Name, Balance: int(account.Balance)}
@@ -113,16 +109,14 @@ func GetUser(id string, jwt string) map[string]interface{} {
 	if !isValid {
 		return map[string]interface{}{"message": "Not valid token"}
 	}
-	db := helpers.ConnectDB()
-	defer db.Close()
 
 	user := &interfaces.User{}
-	if db.Where("id = ? ", id).First(&user).RecordNotFound() {
+	if database.DB.Where("id = ? ", id).First(&user).RecordNotFound() {
 		return map[string]interface{}{"message": "User not found"}
 	}
 
 	accounts := []interfaces.ResponseAccount{}
-	db.Table("accounts").Select("id, name, balance").Where("user_id = ? ", user.ID).Scan(&accounts)
+	database.DB.Table("accounts").Select("id, name, balance").Where("user_id = ? ", user.ID).Scan(&accounts)
 
 	var response = prepareResponse(user, accounts, false)
 	return response

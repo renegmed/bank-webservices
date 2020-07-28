@@ -25,7 +25,7 @@ local-get1:
 	curl localhost:8888/user/2 -H "Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcnkiOjE1OTU4ODkxMDMsInVzZXJfaWQiOjJ9.BSeuJB0E7YI43ZIKd1XigCtPjgsk-Wdj-SIa5uzCGmE"
 
 local-get2:
-	curl localhost:8888/user/3 -H "Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcnkiOjE1OTU5NTEyNTksInVzZXJfaWQiOjN9.YHvLKYhxVv4Gyiqt4qVj5OjVFcut1DRinb7lMiPuJbE"
+	curl localhost:8888/user/3 -H "Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcnkiOjE1OTU5NjM3ODksInVzZXJfaWQiOjN9.nQD7K72aptFuzPo8epp_S12vHKScZhINXqYteJGccdY"
 
 local-login1:
 	@curl -XPOST localhost:8888/login -d '{"username": "Michael", "password": "Michael"}'
@@ -35,6 +35,12 @@ local-login2:
  
 local-transact1:
 	@curl -XPOST localhost:8888/transaction -d '{"userid": 2, "from": 2, "to": 3, "amount": 350}' -H "Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcnkiOjE1OTU4ODkxMDMsInVzZXJfaWQiOjJ9.BSeuJB0E7YI43ZIKd1XigCtPjgsk-Wdj-SIa5uzCGmE"
+
+local-transact2:
+	@curl -XPOST localhost:8888/transaction -d '{"userid": 2, "from": 2, "to": 3, "amount": 550}' -H "Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcnkiOjE1OTU4ODkxMDMsInVzZXJfaWQiOjJ9.BSeuJB0E7YI43ZIKd1XigCtPjgsk-Wdj-SIa5uzCGmE"
+
+local-transacts1:
+	@curl localhost:8888/transactions/2 -H "Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcnkiOjE1OTU4ODkxMDMsInVzZXJfaWQiOjJ9.BSeuJB0E7YI43ZIKd1XigCtPjgsk-Wdj-SIa5uzCGmE"
 
 
 # local-transact1:
