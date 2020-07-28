@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 
+	"duomly.com/go-bank-backend/migrations"
+
 	"duomly.com/go-bank-backend/helpers"
 	"duomly.com/go-bank-backend/useraccounts"
 	"duomly.com/go-bank-backend/users"
@@ -98,9 +100,24 @@ func transaction(w http.ResponseWriter, r *http.Request) {
 	apiResponse(transaction, w)
 }
 
+func merge(w http.ResponseWriter, r *http.Request) {
+
+	log.Println("Start migrations...")
+
+	migrations.Migrate()
+	migrations.MigrateTransactions()
+
+	log.Println("Done migrations...")
+
+	var resp = make(map[string]interface{}) //; map[string]interface{}
+	resp["message"] = "all is fine"
+	apiResponse(resp, w)
+}
+
 func StartApi() {
 	router := mux.NewRouter()
 	router.Use(helpers.PanicHandler)
+	router.HandleFunc("/merge", merge).Methods("POST")
 	router.HandleFunc("/login", login).Methods("POST")
 	router.HandleFunc("/register", register).Methods("POST")
 	router.HandleFunc("/transaction", transaction).Methods("POST")

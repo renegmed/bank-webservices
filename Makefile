@@ -14,15 +14,18 @@ tail-api:
 .PHONY: api
 
 
+local-merge:
+	@curl -XPOST localhost:8888/merge
 
 local-reg1:
 	curl -XPOST localhost:8888/register -d '{"username": "Radek", "email": "radek1@radek.com", "password": "Radek"}'
+
 
 local-get1:
 	curl localhost:8888/user/2 -H "Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcnkiOjE1OTU4ODkxMDMsInVzZXJfaWQiOjJ9.BSeuJB0E7YI43ZIKd1XigCtPjgsk-Wdj-SIa5uzCGmE"
 
 local-get2:
-	curl localhost:8888/user/3 -H "Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcnkiOjE1OTU4ODg1NjYsInVzZXJfaWQiOjN9.6e6R73ww5fCejPwoeHQKEZ0QT40cIMdtB3HdneNmG8s"
+	curl localhost:8888/user/3 -H "Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcnkiOjE1OTU5NTEyNTksInVzZXJfaWQiOjN9.YHvLKYhxVv4Gyiqt4qVj5OjVFcut1DRinb7lMiPuJbE"
 
 local-login1:
 	@curl -XPOST localhost:8888/login -d '{"username": "Michael", "password": "Michael"}'
@@ -36,6 +39,7 @@ local-transact1:
 
 # local-transact1:
 # 	curl -XPOST localhost:8888/register -d '{"username": "Radek", "email": "radek1@radek.com", "password": "Radek"}'
+
 
 reg1:
 	curl -XPOST 172.17.0.3:30088/register -d '{"username": "Radek", "email": "radek@radek.com", "password": "Radek"}'
