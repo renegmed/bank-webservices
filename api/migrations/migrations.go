@@ -35,3 +35,11 @@ func Migrate() {
 
 	createAccounts()
 }
+
+func MigrateTransactions() {
+	Transaction := &interfaces.Transaction{}
+	db := helpers.ConnectDB()
+	db.AutoMigrate(&Transaction)
+	defer db.Close()
+
+}

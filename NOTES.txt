@@ -40,3 +40,5 @@ Running on Kubernetes
   $> make get1
 
   $> make get2 
+
+  $> make transact1

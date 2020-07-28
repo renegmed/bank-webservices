@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"duomly.com/go-bank-backend/helpers"
+	"duomly.com/go-bank-backend/useraccounts"
 	"duomly.com/go-bank-backend/users"
 
 	"github.com/gorilla/mux"
@@ -28,6 +29,13 @@ type Register struct {
 	Password string `json:"password"`
 }
 
+type TransactionBody struct {
+	UserId uint `json:"userid"`
+	From   uint `json:"from"`
+	To     uint `json:"to"`
+	Amount int  `json:"amount"`
+}
+
 func readBody(r *http.Request) []byte {
 	body, err := ioutil.ReadAll(r.Body)
 	helpers.HandleErr(err)
@@ -39,7 +47,7 @@ func apiResponse(call map[string]interface{}, w http.ResponseWriter) {
 		resp := call
 		json.NewEncoder(w).Encode(resp)
 	} else {
-		resp := ErrResponse{Message: "Wrong username or password"}
+		resp := call
 		json.NewEncoder(w).Encode(resp)
 	}
 }
@@ -74,7 +82,20 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 	auth := r.Header.Get("Authorization")
 
 	user := users.GetUser(userId, auth)
+	log.Printf("getUser:\n\t %v", user)
 	apiResponse(user, w)
+}
+
+func transaction(w http.ResponseWriter, r *http.Request) {
+	body := readBody(r)
+	auth := r.Header.Get("Authorization")
+	var formattedBody TransactionBody
+	err := json.Unmarshal(body, &formattedBody)
+	helpers.HandleErr(err)
+
+	transaction := useraccounts.Transaction(formattedBody.UserId, formattedBody.From, formattedBody.To, formattedBody.Amount, auth)
+
+	apiResponse(transaction, w)
 }
 
 func StartApi() {
@@ -82,6 +103,7 @@ func StartApi() {
 	router.Use(helpers.PanicHandler)
 	router.HandleFunc("/login", login).Methods("POST")
 	router.HandleFunc("/register", register).Methods("POST")
+	router.HandleFunc("/transaction", transaction).Methods("POST")
 	router.HandleFunc("/user/{id}", getUser).Methods("GET")
 	fmt.Println("App is working on port :8888")
 	log.Fatal(http.ListenAndServe(":8888", router))
