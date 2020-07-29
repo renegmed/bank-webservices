@@ -2,6 +2,7 @@ package users
 
 import (
 	"fmt"
+	"log"
 	"time"
 
 	"duomly.com/go-bank-backend/database"
@@ -14,6 +15,7 @@ import (
 
 func prepareToken(user *interfaces.User) string {
 	// Sign token
+	log.Println("++++ prepareToken: user.ID", user.ID)
 	tokenContent := jwt.MapClaims{
 		"user_id": user.ID,
 		"expiry":  time.Now().Add(time.Minute * 60).Unix(),
@@ -25,6 +27,8 @@ func prepareToken(user *interfaces.User) string {
 	return token
 }
 func prepareResponse(user *interfaces.User, accounts []interfaces.ResponseAccount, withToken bool) map[string]interface{} {
+
+	log.Println("+++ prepareResponse: user \n\t", user)
 
 	// Setup response
 	responseUser := &interfaces.ResponseUser{

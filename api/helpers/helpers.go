@@ -37,22 +37,6 @@ func HashOnlyVulnerable(pass []byte) string {
 	return hex.EncodeToString(hash.Sum(nil))
 }
 
-// func ConnectDB() *gorm.DB {
-// 	dbName := os.Getenv("DB_NAME")
-// 	dbUser := os.Getenv("DB_USER")
-// 	dbPassword := os.Getenv("DB_PASSWORD")
-// 	dbPort := os.Getenv("DB_PORT")
-// 	dbHost := os.Getenv("DB_HOST")
-
-// 	log.Printf("host=%s, port=%s, user=%s, dbname=%s, password=%s", dbHost, dbPort, dbUser, dbName, dbPassword)
-// 	//db, err := gorm.Open("postgres", "host=postgres port=5432 user=postgres dbname=bankapp password=postgres sslmode=disable")
-// 	db, err := gorm.Open(fmt.Sprintf("%s", dbHost),
-// 		fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=disable", dbHost, dbPort, dbUser, dbName, dbPassword))
-// 	HandleErr(err)
-// 	log.Println("Connected to db....")
-// 	return db
-// }
-
 func Validation(values []interfaces.Validation) bool {
 	username := regexp.MustCompile(`^([A-Za-z0-9]{5,})+$`)
 	email := regexp.MustCompile(`^[A-Za-z0-9]+[@]+[A-Za-z0-9]+[.]+[A-Za-z0-9]+$`)
@@ -100,6 +84,9 @@ func ValidateToken(id string, jwtToken string) bool {
 	})
 	HandleErr(err)
 	var userId, _ = strconv.ParseFloat(id, 8)
+
+	log.Printf("ValidateToken() token.Valid: %v, tokenData[user_id]: %v, userId: %v", token.Valid, tokenData["user_id"], userId)
+
 	if token.Valid && tokenData["user_id"] == userId {
 		return true
 	} else {

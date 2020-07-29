@@ -93,6 +93,11 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 func transaction(w http.ResponseWriter, r *http.Request) {
 	body := readBody(r)
 	auth := r.Header.Get("Authorization")
+
+	log.Println("Body: ", string(body))
+
+	log.Println("Auth: ", auth)
+
 	var formattedBody TransactionBody
 	err := json.Unmarshal(body, &formattedBody)
 	helpers.HandleErr(err)
@@ -102,12 +107,12 @@ func transaction(w http.ResponseWriter, r *http.Request) {
 	apiResponse(transaction, w)
 }
 
-func merge(w http.ResponseWriter, r *http.Request) {
+func migrate(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("Start migrations...")
 
 	migrations.Migrate()
-	//migrations.MigrateTransactions()
+	migrations.MigrateTransactions()
 
 	log.Println("Done migrations...")
 
@@ -127,7 +132,7 @@ func getMyTransactions(w http.ResponseWriter, r *http.Request) {
 func StartApi() {
 	router := mux.NewRouter()
 	router.Use(helpers.PanicHandler)
-	router.HandleFunc("/merge", merge).Methods("POST")
+	router.HandleFunc("/migrate", migrate).Methods("POST")
 	router.HandleFunc("/login", login).Methods("POST")
 	router.HandleFunc("/register", register).Methods("POST")
 	router.HandleFunc("/transaction", transaction).Methods("POST")

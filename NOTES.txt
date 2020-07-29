@@ -42,3 +42,12 @@ Running on Kubernetes
   $> make get2 
 
   $> make transact1
+
+  $> make transactions1
+
+
+psql -U postgres --list
+
+psql -U postgres bankapp 
+
+bankapp=# SELECT * from Accounts;
